@@ -1,0 +1,17 @@
+{
+  "name": "uppgift1",
+  "version": "1.0.0",
+  "description": "Uppgift 1 i kursen ME1580.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Simon Larsson",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.4",
+    "nodemon": "^1.11.0",
+    "pouchdb": "^6.3.4"
+  }
+}
