@@ -5,8 +5,11 @@ var bodyparser = require('body-parser');
 var PouchDB = require('pouchdb');
 var path = require('path');
 
-//Här skapas en databasvariabel med koppling till databasen på localhost med porten 5984.
-var database = new PouchDB("http://127.0.0.1:5984/games");
+//Här skapas en databasvariabel till vår lokala databas.
+var database = new PouchDB("games_pouch");
+
+//Databasvariabel för vår CouchDB på port 5984.
+var remoteCouch = "http://localhost:5984/games";
 
 //Här skapas en tolkare för JSON-data.
 app.use(bodyparser.json());
@@ -17,20 +20,18 @@ app.use(bodyparser.urlencoded({ extended: true }));
 //Här skapas en väg för statiska dokument som HTML/CSS/JS som samlas i mappen 'views'.
 app.use(express.static(path.join(__dirname, 'views')));
 
-
-
-/*
+//Här körs sync-funktionen.
 sync();
 
- Funktion för synkronisering av databaserna  
+ //Funktion för synkronisering av databaserna.  
 function sync() {
     var opts = {live: true};
-    database.replicate.to(remotecouch, opts);
-    database.replicate.from(remotecouch, opts);
+    database.replicate.to(remoteCouch, opts);
+    database.replicate.from(remoteCouch, opts);
 }
-*/
 
-//GET-metod som hämtar ALLA dokument ifrån localhost:3000/games/.  
+
+//GET-metod som hämtar ALLA dokument ifrån localhost:3000/games.  
 app.get ("/games", function(req, res){
     database.allDocs({include_docs: true}).then(function (result) {
         res.send(result.rows.map(function (item){
@@ -41,14 +42,14 @@ app.get ("/games", function(req, res){
     });
 });
 
-//POST-metod som skickar ett nytt dokument till routen /games/.
+//POST-metod som skickar ett nytt dokument till routen /games.
 app.post ("/games", function(req, res){
     database.post(req.body).then(function(result){
         res.send(result); // Svarar med resultat.
     });
 });
 
-//DELTE-metod som tar bort ett dokument med angivet id.
+//DELETE-metod som tar bort ett dokument med angivet id.
 app.delete ("/games", function(req, res){
     database.get(req.body.id).then(function(result){
         return database.remove(result);
@@ -57,7 +58,7 @@ app.delete ("/games", function(req, res){
     });
 });
 
-//PUT-metod som uppdaterar ett dokument med angivet id.
+//PUT-metod som hämtar parametrarna och uppdaterar ett dokument med angivet id.
 app.put ("/games/:id", function(req, res){
     database.get(req.params.id).then(function(result){
         
